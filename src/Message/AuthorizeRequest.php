@@ -4,6 +4,7 @@ namespace Omnipay\Payflow\Message;
 
 use Omnipay\Common\Message\AbstractRequest;
 use Omnipay\Payflow\Check;
+use Omnipay\Common\CreditCard;
 
 /**
  * Payflow Authorize Request
@@ -260,6 +261,31 @@ class AuthorizeRequest extends AbstractRequest
 
         return $this->setParameter('check', $value);
     }
+	
+    /**
+     * Get the card.
+     *
+     * @return CreditCard
+     */
+    public function getCard()
+    { 
+        return $this->getParameter('card');
+    }
+
+    /**
+     * Sets the card.
+     *
+     * @param CreditCard $value
+     * @return $this
+     */
+    public function setCard($value)
+    {
+        if ($value && !$value instanceof CreditCard) {
+            $value = new CreditCard($value);
+        }
+
+        return $this->setParameter('card', $value);
+    }
 
     protected function getBaseData()
     {
@@ -283,6 +309,11 @@ class AuthorizeRequest extends AbstractRequest
     {
         $this->validate('amount');
         $data = $this->getBaseData();
+		
+		if($this->getParameter('card')){
+			$this->setCard($this->getParameter('card'));
+			$this->setTender(null);
+		}
         
        // var_dump($this->getTender());
         //var_dump($this->getCheck());
